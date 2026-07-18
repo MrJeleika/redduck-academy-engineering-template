@@ -6,7 +6,7 @@ repo, work through the tasks in the language of your choice, push to your own fo
 the repository URL on the academy website.
 
 ## How it works
- 
+
 Each task is a folder with a `TASK.md` brief and a `SOLUTION.md` you fill in. Coding tasks also
 have a `src/` folder with a starter file in each supported language.
 
