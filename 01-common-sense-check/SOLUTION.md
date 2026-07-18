@@ -2,18 +2,16 @@
 
 ## Language
 
-<!-- Keep only the language you completed. Delete the other options so a single value is left, for example: language: "typescript" -->
 language: "typescript"
 
 ## The flaw
 
-Describe the flaw you found. Show how it can be exploited, as a short sequence of concrete steps.
+The order total is computed from the `price` field on each request item, and the caller controls that field. Send `createOrder("o1", { items: [{ productId: "sku-blue-tshirt", quantity: 1, price: 1 }] })`. The server computes `total = 1 * 1 = 1` cent and stores that, even though the real price is 2000 cents. The caller can pay any amount they choose, including 0 or a negative number.
 
 ## The fix
 
-Explain what you changed and why the exploit no longer works.
+I removed the `price` field from `OrderItem`, so the request no longer carries a price. `createOrder` now looks up each product in `CATALOG` by `productId` and uses the catalog price. An unknown `productId` is rejected with an error. The caller has no way to influence the price.
 
 ## Patch or elimination?
 
-Did your fix add a check that guards the input, or did it remove the condition that made the flaw
-possible? Say which one you did, and why removing the condition is stronger than guarding it.
+Elimination. Rather than keep the client price and add a check that it equals the catalog price, I removed the client-supplied price from the request shape. There is no longer a value for the caller to control, so there is nothing left to attack.
