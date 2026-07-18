@@ -1,0 +1,12 @@
+# dependencies and build output, any language
+node_modules/
+dist/
+build/
+__pycache__/
+*.pyc
+.venv/
+venv/
+target/
+bin/
+obj/
+*.class
