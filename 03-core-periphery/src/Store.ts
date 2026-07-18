@@ -1,47 +1,50 @@
 // 03-core-periphery/src/Store.ts
-// A minimal user store. No framework, no build step required.
+// The corrected user store. The UserRecord type, the seed users, and the hash
+// helper are given in ./store-data and are not part of what you edit here.
 
-interface UserRecord {
-  username: string;
-  passwordHash: string;
-  role: string;
-}
+import { SEED_USERS, UserRecord, hash } from "./store-data";
 
 export interface PublicProfile {
   username: string;
   role: string;
 }
 
-function hash(password: string): string {
-  return "hash:" + password;
+// The narrow interface: the only way anything outside the core reaches it.
+// Every method is hash-free, so a holder of this interface has no path to a hash.
+export interface UserDirectory {
+  verify(username: string, password: string): boolean;
+  getPublicProfile(username: string): PublicProfile | undefined;
+  usernames(): string[];
 }
 
-export class UserStore {
-  // Core: the only place the hash lives. Nothing outside this class can reach it.
-  private users: Record<string, UserRecord> = {
-    alice: { username: "alice", passwordHash: "hash:alice-pw", role: "admin" },
-    bob: { username: "bob", passwordHash: "hash:bob-pw", role: "member" },
-  };
+// Core: the only place the hash lives. `users` is private and the class exposes
+// nothing beyond UserDirectory, so the hash cannot be reached from outside.
+export class UserStore implements UserDirectory {
+  private users: Record<string, UserRecord> = SEED_USERS;
 
-  // Core: check a password. Reveals nothing about the stored hash.
   verify(username: string, password: string): boolean {
     const user = this.users[username];
     if (!user) return false;
     return user.passwordHash === hash(password);
   }
 
-  // Core: expose non-secret fields only. The hash is never returned.
   getPublicProfile(username: string): PublicProfile | undefined {
     const user = this.users[username];
     if (!user) return undefined;
     return { username: user.username, role: user.role };
   }
 
-  // Periphery: reaches the core only through getPublicProfile, so it cannot obtain a hash.
-  report(): string[] {
-    return Object.keys(this.users).map((name) => {
-      const profile = this.getPublicProfile(name)!;
-      return profile.username + " (" + profile.role + ")";
-    });
+  usernames(): string[] {
+    return Object.keys(this.users);
   }
+}
+
+// Periphery: a free function holding only the narrow interface. It has no
+// reference to `users` and no method that yields a hash, so there is no code
+// path from here to the secret.
+export function report(directory: UserDirectory): string[] {
+  return directory.usernames().map((name) => {
+    const profile = directory.getPublicProfile(name)!;
+    return profile.username + " (" + profile.role + ")";
+  });
 }

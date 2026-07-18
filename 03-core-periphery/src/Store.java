@@ -1,42 +1,28 @@
-// 03-core-periphery/src/Store.java
-// A minimal user store. Plain Java, no framework.
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+// 03-core-periphery/src/Store.java  —  JAVA version.
+// Only edit this file if you chose Java, and complete just one language.
+// Then declare it at the top of SOLUTION.md:  language: "java"
+//
+// Given (do not edit): StoreData.java holds the record type, the seed users, and
+// the hash helper. Done for you: verify, which returns only a boolean.
+// Your job:
+//   - add a hash-free public-profile lookup that returns username and role,
+//   - rebuild report so it lists every user without ever including a hash.
+// Full description in TASK.md.
 import java.util.Map;
 
 public class Store {
-    record UserRecord(String username, String passwordHash, String role) {}
-
     static class UserStore {
-        private final Map<String, UserRecord> users = new LinkedHashMap<>();
+        private final Map<String, StoreData.UserRecord> users = StoreData.seedUsers();
 
-        UserStore() {
-            users.put("alice", new UserRecord("alice", "hash:alice-pw", "admin"));
-            users.put("bob", new UserRecord("bob", "hash:bob-pw", "member"));
-        }
-
+        // The one legitimate core operation. It checks a password and returns only a boolean.
         boolean verify(String username, String password) {
-            UserRecord user = users.get(username);
+            StoreData.UserRecord user = users.get(username);
             if (user == null) return false;
-            return user.passwordHash().equals(hash(password));
+            return user.passwordHash().equals(StoreData.hash(password));
         }
 
-        UserRecord getUser(String username) {
-            return users.get(username);
-        }
+        // TODO: expose a narrow, hash-free way to read a user's public profile (username and role).
 
-        List<String> report() {
-            List<String> rows = new ArrayList<>();
-            for (String name : users.keySet()) {
-                UserRecord user = getUser(name);
-                rows.add(user.username() + " (" + user.role() + ") " + user.passwordHash());
-            }
-            return rows;
-        }
-
-        private static String hash(String password) {
-            return "hash:" + password;
-        }
+        // TODO: rebuild a report of all users that never exposes a password hash.
     }
 }
