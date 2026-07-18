@@ -1,30 +1,28 @@
-# 03-core-periphery/src/store.py
-# A minimal user store. No framework required.
+# 03-core-periphery/src/store.py  —  PYTHON version.
+# Only edit this file if you chose Python, and complete just one language.
+# Then declare it at the top of SOLUTION.md:  language: "python"
+#
+# Given (do not edit): store_data.py holds the seed users and the hash helper.
+# Done for you: verify, which checks a password and returns only a boolean.
+# Your job:
+#   - add a hash-free public-profile lookup that returns username and role,
+#   - rebuild report so it lists every user without ever including a hash.
+# Full description in TASK.md.
 
-
-def _hash(password):
-    return "hash:" + password
+from store_data import SEED_USERS, hash_password
 
 
 class UserStore:
     def __init__(self):
-        self._users = {
-            "alice": {"username": "alice", "passwordHash": "hash:alice-pw", "role": "admin"},
-            "bob": {"username": "bob", "passwordHash": "hash:bob-pw", "role": "member"},
-        }
+        self._users = SEED_USERS
 
+    # The one legitimate core operation. It checks a password and returns only a bool.
     def verify(self, username, password):
         user = self._users.get(username)
         if user is None:
             return False
-        return user["passwordHash"] == _hash(password)
+        return user["passwordHash"] == hash_password(password)
 
-    def get_user(self, username):
-        return self._users.get(username)
+    # TODO: expose a narrow, hash-free way to read a user's public profile (username and role).
 
-    def report(self):
-        rows = []
-        for name in self._users:
-            user = self.get_user(name)
-            rows.append(f"{user['username']} ({user['role']}) {user['passwordHash']}")
-        return rows
+    # TODO: rebuild a report of all users that never exposes a password hash.
