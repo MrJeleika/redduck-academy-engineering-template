@@ -9,7 +9,7 @@ the repository URL on the academy website.
  
 Each task is a folder with a `TASK.md` brief and a `SOLUTION.md` you fill in. Coding tasks also
 have a `src/` folder with a starter file in each supported language.
-
+ 
 Pick one language and use it across the tasks: **TypeScript**, **Python**, **Java**, or **C#**.
 Complete the starter for your language and leave the other languages as they are. Your work is
 reviewed by reading the files you push, so nothing needs to build or run.
