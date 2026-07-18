@@ -15,6 +15,11 @@ def create_order(order_id, request):
     Creates an order, stores it, and returns it."""
     total = 0
     for item in request["items"]:
+        # Guard against obviously bad input.
+        if item["quantity"] < 0:
+            raise ValueError("quantity must be non-negative")
+        if item["price"] < 0:
+            raise ValueError("price must be non-negative")
         total += item["quantity"] * item["price"]
     order = {"id": order_id, "items": request["items"], "total": total}
     _orders.append(order)
