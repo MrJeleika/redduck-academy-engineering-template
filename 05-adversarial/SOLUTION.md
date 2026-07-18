@@ -2,22 +2,16 @@
 
 ## Language
 
-<!-- Keep only the language you completed. Delete the other options so a single value is left, for example: language: "typescript" -->
-language: "typescript" | "python" | "java" | "csharp"
+language: "typescript"
 
 ## The attack
 
-Describe, as a short sequence of steps, what a rational adversary does through the public interface
-to end with points they were never given. Name the starting balances, the exact call you make, and
-the ending balances.
+The attacker starts with 0 points and the victim with 100. The attacker calls `transfer("attacker", "victim", -100)`. The guard `available < amount` is `0 < -100`, which is false, so it passes. Moving a negative amount runs the transfer backwards: the attacker's balance becomes `0 - (-100) = 100`, and the victim's becomes `100 + (-100) = 0`. The attacker ends with 100 points they were never given, using only the public `transfer` and `balanceOf`.
 
 ## Why it works at the design level
 
-Explain the cause at the level of the design. Which value does the caller control that the system
-should have controlled itself, and what does that let the caller do?
+The caller controls the sign of `amount`, a value the system should control itself. `transfer` assumes `amount` is positive but never enforces it, so the caller can pass a negative amount and reverse the direction of the transfer. The flaw is not one missing check. It is a design that hands the caller authority over whether points move out of an account or into it.
 
 ## Patch or elimination?
 
-State your fix and classify it. Does it patch the attack, by rejecting the bad input at runtime, or
-eliminate the condition, by making the bad input impossible to express at all? Say which, and why
-removing the condition is stronger than guarding it.
+A patch rejects a non-positive amount at runtime, for example `if (amount <= 0) throw new Error("amount must be positive")`. An elimination makes a negative amount impossible to express, by typing `amount` as a value that cannot be negative, so the sign is never in the caller's hands. Elimination is stronger, because a value that cannot be negative cannot carry this attack at all, while a runtime check can be bypassed or left off another code path. I would eliminate it.

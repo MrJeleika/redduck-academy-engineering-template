@@ -2,17 +2,12 @@
 
 ## Language
 
-<!-- Keep only the language you completed. Delete the other options so a single value is left, for example: language: "typescript" -->
-language: "typescript" | "python" | "java" | "csharp"
+language: "typescript"
 
 ## Why derive the identifier from content
 
-Explain why an identifier that each party recomputes from the content is a stronger guarantee
-than a name looked up in a registry. Say what the registry would have forced someone to trust,
-and why recomputing removes it.
+A registry maps a name to an instance, and every consumer must query it and trust the answer. If the registry is wrong, stale, or tampered with, every consumer is deceived at once. A content-derived identifier is recomputed by each party from the content they already hold, so there is nothing to query and no authority to trust. Two parties with the same content always get the same id, and no one can place different content under the same id.
 
 ## What changes when the content changes
 
-The identifier changes with the content. Explain why that is a feature, because any substitution
-becomes detectable, and also a constraint, because you cannot keep one identifier while changing
-the content it points to.
+Because the id is a hash of the content, any change to the content changes the id. This is a feature: a substitution is detectable, since altered content no longer matches its original id. It is also a constraint: you cannot keep one id while changing the content it points to, so a content-derived id is the wrong choice when you need a stable name for something whose content will change.

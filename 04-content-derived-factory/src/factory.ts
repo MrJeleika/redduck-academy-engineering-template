@@ -1,8 +1,9 @@
 // 04-content-derived-factory/src/factory.ts
-// A content-derived factory. Fill in create() and derive(). No framework, no build step.
+// A content-derived factory. No framework, no build step.
 // Run with: npx tsx src/factory.ts
 
 import { strict as assert } from "node:assert";
+import { createHash } from "node:crypto";
 
 // The content an item is built from. Any set of string fields; here, a short document.
 export type Content = Record<string, string>;
@@ -12,15 +13,20 @@ export interface Item {
   id: string;
 }
 
-// TODO: return an Item holding the content and an id derived from its content (use derive).
-export function create(content: Content): Item {
-  throw new Error("not implemented");
+// Deterministic serialization: sort the keys so field order does not change the bytes.
+function canonicalize(content: Content): string {
+  const keys = Object.keys(content).sort();
+  return JSON.stringify(keys.map((key) => [key, content[key]]));
 }
 
-// TODO: recompute the id from the content alone, with no registry and no shared state,
-// so the demo passes.
+// Recompute the id from the content alone. No registry, no shared state.
 export function derive(content: Content): string {
-  throw new Error("not implemented");
+  return createHash("sha256").update(canonicalize(content)).digest("hex");
+}
+
+// Return an Item holding the content and an id derived from that content.
+export function create(content: Content): Item {
+  return { content, id: derive(content) };
 }
 
 // Demo: create an item, have a second party derive the id from the same content, then tamper.
