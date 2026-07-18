@@ -3,7 +3,7 @@
 ## Language
 
 <!-- Keep only the language you completed. Delete the other options so a single value is left, for example: language: "typescript" -->
-language: "typescript" | "python" | "java" | "csharp"
+language: "typescript"
 
 ## The flaw
 
