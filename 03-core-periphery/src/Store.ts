@@ -37,6 +37,12 @@ export class UserStore implements UserDirectory {
   usernames(): string[] {
     return Object.keys(this.users);
   }
+
+  // Admin convenience: hand back a user's full record. Guarded by a role check.
+  getUser(requesterRole: string, username: string): UserRecord | undefined {
+    if (requesterRole !== "admin") return undefined;
+    return this.users[username];
+  }
 }
 
 // Periphery: a free function holding only the narrow interface. It has no

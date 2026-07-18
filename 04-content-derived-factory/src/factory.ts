@@ -3,7 +3,6 @@
 // Run with: npx tsx src/factory.ts
 
 import { strict as assert } from "node:assert";
-import { createHash } from "node:crypto";
 
 // The content an item is built from. Any set of string fields; here, a short document.
 export type Content = Record<string, string>;
@@ -13,18 +12,15 @@ export interface Item {
   id: string;
 }
 
-// Deterministic serialization: sort the keys so field order does not change the bytes.
-function canonicalize(content: Content): string {
-  const keys = Object.keys(content).sort();
-  return JSON.stringify(keys.map((key) => [key, content[key]]));
-}
+// A counter so every item gets a unique id.
+let nextId = 1;
 
-// Recompute the id from the content alone. No registry, no shared state.
+// Assign the next sequential id.
 export function derive(content: Content): string {
-  return createHash("sha256").update(canonicalize(content)).digest("hex");
+  return "item-" + String(nextId++);
 }
 
-// Return an Item holding the content and an id derived from that content.
+// Return an Item holding the content and a fresh id.
 export function create(content: Content): Item {
   return { content, id: derive(content) };
 }
