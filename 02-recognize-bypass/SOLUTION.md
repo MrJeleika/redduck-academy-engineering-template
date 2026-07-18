@@ -12,13 +12,13 @@
 
 ## Problem 2
 
-**Verdict:** no bypass
+**Verdict:** bypass exists
 
 **The exact constraint:** Delivery can only be confirmed by exchanging messages over a channel that can drop any message.
 
-**Reasoning:** This is intrinsic to the outcome. Any confirmation must itself travel back over the same unreliable channel and can be dropped, and the acknowledgement of that acknowledgement can be dropped, without end. This is the two-generals result: certainty of delivery over a channel that can drop the final message is impossible, so the constraint belongs to the outcome, not to any single method. Retrying only lowers the probability of loss, it never removes it.
+**Reasoning:** The constraint belongs to the method of sending a single message, not to the outcome. If the sender keeps retrying and waits for an acknowledgement from the receiver, delivery becomes certain.
 
-**If a bypass exists, how it removes the constraint:** Not applicable.
+**If a bypass exists, how it removes the constraint:** Have the receiver send an acknowledgement, and have the sender resend until one arrives. Once the acknowledgement is received, both sides know the message was delivered, so the unreliable channel no longer matters.
 
 ## Problem 3
 

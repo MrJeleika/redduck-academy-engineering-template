@@ -2,7 +2,7 @@
 // A minimal order service. No framework, no build step required.
 
 export interface CatalogEntry { name: string; price: number } // price in cents
-export interface OrderItem { productId: string; quantity: number }
+export interface OrderItem { productId: string; quantity: number; price: number }
 export interface OrderRequest { items: OrderItem[] }
 export interface Order { id: string; items: OrderItem[]; total: number }
 
@@ -18,11 +18,13 @@ const orders: Order[] = [];
 export function createOrder(id: string, request: OrderRequest): Order {
   let total = 0;
   for (const item of request.items) {
-    const entry = CATALOG[item.productId];
-    if (entry === undefined) {
-      throw new Error("unknown product: " + item.productId);
+    if (item.quantity < 0) {
+      throw new Error("quantity must be non-negative");
     }
-    total += item.quantity * entry.price;
+    if (item.price < 0) {
+      throw new Error("price must be non-negative");
+    }
+    total += item.quantity * item.price;
   }
   const order: Order = { id, items: request.items, total };
   orders.push(order);
